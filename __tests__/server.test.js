@@ -2,18 +2,26 @@
 const server = require("../src/server");
 const supertest = require("supertest");
 const request = supertest(server.app);
+const { db } = require("../src/models/index");
 let id;
 
-describe("testing 404", () => {
-  it("testing /person", async () => {
+beforeAll(async () => {
+  await db.sync();
+});
+afterAll(async () => {
+  await db.drop();
+});
+
+describe("test 404", () => {
+  it("testing 404", async () => {
     const response = await request.post("/");
     expect(response.status).toEqual(404);
   });
 
   it("testing bad method", async () => {
     id = 1;
-    const response = await request.get("/clothes/1");
-    expect(parseInt(response.body.id)).toEqual(id);
+    const response = await request.post("/");
+    expect(response.status).toBe(404);
   });
 });
 
